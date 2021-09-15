@@ -11,6 +11,7 @@ import {
   Modal,
   Image,
   TouchableOpacity,
+  Button,
 } from "react-native";
 
 export default function App() {
@@ -36,12 +37,15 @@ export default function App() {
   }, []);
 
   async function takePicture() {
+    console.log("take picture!!")
     if (camera) {
       const options = { quality: 0.5, skipProcessing: true };
       const data = await camera.takePictureAsync(options);
       setImage(data.uri);
       setOpen(true);
       // console.log(data);
+    } else {
+      console.log('no img!!')
     }
   }
 
@@ -101,13 +105,15 @@ export default function App() {
         onChangeText={setProcedimento}
         placeholder="procedimento"
       />
+      <Button title="TIRAR FOTO" onPress={takePicture}/>
       <Camera
         // flashMode={flashMode}
         style={styles.camera}
         // type={type}
-        // ref={(ref) => setCamera(ref)}
+        ref={(ref) => setCamera(ref)}
         ratio="3:4"
-      ></Camera>
+      >
+      </Camera>
 
       {image && (
         <Modal animationType="slide" transparent={false} visible={open}>
@@ -164,7 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   camera: {
-    position: 'absolute',
+    position: "absolute",
     marginTop: 200,
     width: 400,
     height: (400 * 4) / 3,
@@ -201,7 +207,7 @@ const styles = StyleSheet.create({
   takePictureViewA: {
     position: "absolute",
     right: 500 / 2 - 41,
-    bottom: 32,
+    top: 32,
     borderWidth: 4,
     borderColor: "white",
     // backgroundColor: 'transparent',
@@ -212,7 +218,7 @@ const styles = StyleSheet.create({
   takePictureViewB: {
     position: "absolute",
     right: 500 / 2 - 35,
-    bottom: 38,
+    top: 38,
     backgroundColor: "white",
     width: 70,
     height: 70,
