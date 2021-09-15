@@ -1,8 +1,8 @@
-import {StatusBar} from 'expo-status-bar';
-import React, {useState, useEffect} from 'react';
-import {Camera} from 'expo-camera';
-import {FontAwesome, Ionicons, MaterialIcons} from '@expo/vector-icons';
-import * as MediaLibrary from 'expo-media-library';
+import { StatusBar } from "expo-status-bar";
+import React, { useState, useEffect } from "react";
+import { Camera } from "expo-camera";
+import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import * as MediaLibrary from "expo-media-library";
 import {
   StyleSheet,
   Text,
@@ -12,18 +12,21 @@ import {
   Image,
   TouchableOpacity,
   Button,
-} from 'react-native';
+} from "react-native";
 
-import Realm from 'realm';
+
+import DatabaseInit from './src/database/database-init';
+
+import Realm from "realm";
 
 export default function App() {
   const Person = {
-    name: 'Person',
-    primaryKey: '_id',
+    name: "Person",
+    primaryKey: "_id",
     properties: {
-      _id: 'objectId',
-      name: 'string',
-      image: 'string',
+      _id: "objectId",
+      name: "string",
+      image: "string",
     },
     required: [_id, name, image],
   };
@@ -31,8 +34,8 @@ export default function App() {
   // Cria o banco
   const realm = null;
 
-  const [paciente, setPaciente] = useState('');
-  const [procedimento, setProcedimento] = useState('');
+  const [paciente, setPaciente] = useState("");
+  const [procedimento, setProcedimento] = useState("");
 
   const [camera, setCamera] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
@@ -46,26 +49,35 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const CameraStatus = await Camera.requestPermissionsAsync();
-      setHasCameraPermission(CameraStatus.status === 'granted');
+      setHasCameraPermission(CameraStatus.status === "granted");
       const MediaLibraryStatus = await MediaLibrary.requestPermissionsAsync();
-      setHasMediaLibraryPermission(MediaLibraryStatus.status === 'granted');
-      realm = await Realm.open({
-        //? Entra outros schemas
-        schema: [Person],
-      });
+      setHasMediaLibraryPermission(MediaLibraryStatus.status === "granted");
+
+      // REALM
+
+      // realm = await Realm.open({
+      //   //? Entra outros schemas
+      //   schema: [Person],
+      // });
+
+      // SQLITE
+
+      // CODIGO DA WEB: suspeito
+      new DatabaseInit();
+      console.log("initialize database");
     })();
   }, []);
 
   async function takePicture() {
-    console.log('take picture!!');
+    console.log("take picture!!");
     if (camera) {
-      const options = {quality: 0.5, skipProcessing: true};
+      const options = { quality: 0.5, skipProcessing: true };
       const data = await camera.takePictureAsync(options);
       setImage(data.uri);
       setOpen(true);
       // console.log(data);
     } else {
-      console.log('no img!!');
+      console.log("no img!!");
     }
   }
 
@@ -82,7 +94,7 @@ export default function App() {
       return;
     }
     const asset = await MediaLibrary.createAssetAsync(image);
-    MediaLibrary.createAlbumAsync('ifofoca', asset)
+    MediaLibrary.createAlbumAsync("ifofoca", asset)
       .then(() => {
         // console.log(`Album ${title} create!`);
       })
@@ -99,9 +111,9 @@ export default function App() {
     const number1 = Math.floor(Math.random() * 100);
     const number2 = Math.floor(Math.random() * 100);
 
-    const newPerson = realm.create('Person', {
-      name: 'paciente' + number1,
-      image: 'image' + number2,
+    const newPerson = realm.create("Person", {
+      name: "paciente" + number1,
+      image: "image" + number2,
     });
 
     // realm.write(() => {newPerson});
@@ -109,7 +121,7 @@ export default function App() {
 
     // R - Read
     // ! OUT NISSO
-    const people = realm.objects('Person');
+    const people = realm.objects("Person");
     console.log(people);
     // U - Update
 
@@ -117,15 +129,15 @@ export default function App() {
   }
   // --------------------------------------------------------------------------
 
-  const [flashMode, setFlashMode] = useState('off');
+  const [flashMode, setFlashMode] = useState("off");
 
   const __handleFlashMode = () => {
-    if (flashMode === 'on') {
-      setFlashMode('off');
-    } else if (flashMode === 'off') {
-      setFlashMode('on');
+    if (flashMode === "on") {
+      setFlashMode("off");
+    } else if (flashMode === "off") {
+      setFlashMode("on");
     } else {
-      setFlashMode('auto');
+      setFlashMode("auto");
     }
   };
 
@@ -142,56 +154,60 @@ export default function App() {
       <TextInput
         value={paciente}
         onChangeText={setPaciente}
-        placeholder='paciente'
+        placeholder="paciente"
       />
       <Text>Procedimento</Text>
       <TextInput
         value={procedimento}
         onChangeText={setProcedimento}
-        placeholder='procedimento'
+        placeholder="procedimento"
       />
-      <Button title='TIRAR FOTO' onPress={takePicture} />
-      <Button title='POPULATE' onPress={populate} />
+      <Button title="TIRAR FOTO" onPress={takePicture} />
+      <Button title="POPULATE" onPress={populate} />
       <Camera
         // flashMode={flashMode}
         style={styles.camera}
         // type={type}
         // ref={(ref) => setCamera(ref)}
         ref={(ref) => setCamera(ref)}
-        ratio='3:4'></Camera>
+        ratio="3:4"
+      ></Camera>
 
       {image && (
-        <Modal animationType='slide' transparent={false} visible={open}>
+        <Modal animationType="slide" transparent={false} visible={open}>
           <View
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               margin: 20,
-            }}>
+            }}
+          >
             <Image
               style={{
                 width: 500 - 30,
                 height: 500 - 30,
                 borderRadius: 10,
               }}
-              source={{uri: image}}
+              source={{ uri: image }}
             />
 
             <Text style={styles.label}>Aceitar Imagem?</Text>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: "row" }}>
               <TouchableOpacity
-                style={{margin: 30}}
-                onPress={() => setOpen(false)}>
-                <FontAwesome name='times' size={50} style={{color: 'gray'}} />
+                style={{ margin: 30 }}
+                onPress={() => setOpen(false)}
+              >
+                <FontAwesome name="times" size={50} style={{ color: "gray" }} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={{margin: 30}}
-                onPress={handleAcceptPhoto}>
+                style={{ margin: 30 }}
+                onPress={handleAcceptPhoto}
+              >
                 <FontAwesome
-                  name='check'
+                  name="check"
                   size={50}
-                  style={{color: '#333333'}}
+                  style={{ color: "#333333" }}
                 />
               </TouchableOpacity>
             </View>
@@ -207,20 +223,20 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 40,
     paddingLeft: 20,
-    backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+    backgroundColor: "#fff",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
   camera: {
-    position: 'absolute',
+    position: "absolute",
     marginTop: 200,
     width: 400,
     height: (400 * 4) / 3,
   },
   button: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#121212',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
     margin: 20,
     borderRadius: 10,
     height: 50,
@@ -228,7 +244,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 18,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: "black",
     marginBottom: 15,
     padding: 5,
     margin: 5,
@@ -247,21 +263,21 @@ const styles = StyleSheet.create({
   //   elevation: 3, // works on android
   // },
   takePictureViewA: {
-    position: 'absolute',
+    position: "absolute",
     right: 500 / 2 - 41,
     top: 32,
     borderWidth: 4,
-    borderColor: 'white',
+    borderColor: "white",
     // backgroundColor: 'transparent',
     width: 82,
     height: 82,
     borderRadius: 50,
   },
   takePictureViewB: {
-    position: 'absolute',
+    position: "absolute",
     right: 500 / 2 - 35,
     top: 38,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     width: 70,
     height: 70,
     borderRadius: 50,
