@@ -12,7 +12,7 @@ import {
   Image,
   TouchableOpacity,
   Button,
-} from "react-native";
+} from 'react-native';
 
 import Realm from 'realm';
 
@@ -29,10 +29,7 @@ export default function App() {
   };
 
   // Cria o banco
-  const realm = await Realm.open({
-    //? Entra outros schemas
-    schema: [Person],
-  });
+  const realm = null;
 
   const [paciente, setPaciente] = useState('');
   const [procedimento, setProcedimento] = useState('');
@@ -52,38 +49,23 @@ export default function App() {
       setHasCameraPermission(CameraStatus.status === 'granted');
       const MediaLibraryStatus = await MediaLibrary.requestPermissionsAsync();
       setHasMediaLibraryPermission(MediaLibraryStatus.status === 'granted');
+      realm = await Realm.open({
+        //? Entra outros schemas
+        schema: [Person],
+      });
     })();
   }, []);
 
   async function takePicture() {
-    console.log("take picture!!")
+    console.log('take picture!!');
     if (camera) {
       const options = {quality: 0.5, skipProcessing: true};
       const data = await camera.takePictureAsync(options);
       setImage(data.uri);
       setOpen(true);
       // console.log(data);
-      
-      // C - Create
-      // Provável que _id tem como gerar automaticamente pelo realm, se n tiver nanoid
-      const newPerson = realm.create('Person', {
-        name: "paciente",
-        image: "image",
-      });
-
-      // realm.write(() => {newPerson});
-      realm.write(newPerson);
-
-      // R - Read
-      // ! OUT NISSO
-      const people = realm.objects('Person');
-      const person = realm.objectForPrimaryKey('Person', item_id);
-
-      // U - Update
-
-      // D - Delete
     } else {
-      console.log('no img!!')
+      console.log('no img!!');
     }
   }
 
@@ -109,6 +91,31 @@ export default function App() {
       });
     setOpen(false);
   }
+
+  // --------------------------------------------------------------------------
+  async function populate() {
+    // C - Create
+    // Provável que _id tem como gerar automaticamente pelo realm, se n tiver nanoid
+    const number1 = Math.floor(Math.random() * 100);
+    const number2 = Math.floor(Math.random() * 100);
+
+    const newPerson = realm.create('Person', {
+      name: 'paciente' + number1,
+      image: 'image' + number2,
+    });
+
+    // realm.write(() => {newPerson});
+    realm.write(newPerson);
+
+    // R - Read
+    // ! OUT NISSO
+    const people = realm.objects('Person');
+    console.log(people);
+    // U - Update
+
+    // D - Delete
+  }
+  // --------------------------------------------------------------------------
 
   const [flashMode, setFlashMode] = useState('off');
 
@@ -143,16 +150,15 @@ export default function App() {
         onChangeText={setProcedimento}
         placeholder='procedimento'
       />
-      <Button title="TIRAR FOTO" onPress={takePicture}/>
+      <Button title='TIRAR FOTO' onPress={takePicture} />
+      <Button title='POPULATE' onPress={populate} />
       <Camera
         // flashMode={flashMode}
         style={styles.camera}
         // type={type}
         // ref={(ref) => setCamera(ref)}
         ref={(ref) => setCamera(ref)}
-        ratio="3:4"
-      >
-      </Camera>
+        ratio='3:4'></Camera>
 
       {image && (
         <Modal animationType='slide' transparent={false} visible={open}>
@@ -206,7 +212,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   camera: {
-    position: "absolute",
+    position: 'absolute',
     marginTop: 200,
     width: 400,
     height: (400 * 4) / 3,
@@ -255,7 +261,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 500 / 2 - 35,
     top: 38,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     width: 70,
     height: 70,
     borderRadius: 50,
