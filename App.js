@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 import DatabaseInit from './src/database/database-init';
-import Service from './src/services/animal.service';
+import PacienteService from './src/services/paciente.service';
 
 export default function App() {
   const [paciente, setPaciente] = useState('');
@@ -84,13 +84,17 @@ export default function App() {
     const min = 0,
       max = 100;
     // Provável que _id tem como gerar automaticamente pelo realm, se n tiver nanoid
-    const number = Math.floor(Math.random() * (max - min + 1) + min);
+    const number1 = Math.floor(Math.random() * (max - min + 1) + min);
+    const number2 = Math.floor(Math.random() * (max - min + 1) + min);
 
-    Service.addData(`paciente${number}`);
+    await PacienteService.addData({
+      name: `paciente${number1}`,
+      image: `imagePc${number2}`,
+    });
 
     // R - Read
     // ! OUT NISSO
-    const people = Service.findAll();
+    const people = await PacienteService.findAll();
     console.log(people);
     // U - Update
 
