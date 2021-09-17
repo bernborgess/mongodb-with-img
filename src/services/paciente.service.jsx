@@ -11,9 +11,9 @@ export default class PacienteService {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            `insert into ${table} (nome,image) 
+            `insert into ${table} (name,image) 
                 values (?,?)`,
-            [param.nome, param.image],
+            [param.name, param.image],
             (_, {insertId, rows}) => {
               console.log('id insert: ' + insertId);
               resolve(insertId);

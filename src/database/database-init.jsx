@@ -1,6 +1,8 @@
 import {DatabaseConnection} from './database-connection';
 
 var db = null;
+
+// ! De alguma forma temos de isolar isso apenas na primeira vez que o usuário abre o app, caso contrário o banco é resetado toda vez que se abre o app. 
 export default class DatabaseInit {
   constructor() {
     db = DatabaseConnection.getConnection();
@@ -14,8 +16,8 @@ export default class DatabaseInit {
       `drop table if exists paciente;`,
       `create table if not exists paciente (
             id integer primary key autoincrement,
-            nome text,
-            image text,         
+            name text,
+            image text         
       );`,
     ];
 
